@@ -1,5 +1,8 @@
 # leleojs
+
 If you're thinking "Oh shit, one more framework". Be calm, this is just a laboratory to show that you don't need a big code for vanilla to gain other flavors, including reactivity.
+
+*Se você está pensando "Ah não, mais uma framework". Fique tranquilo, este é apenas um laboratório para mostrar que não é necessário muito código para o JS Baunilha ganhar outros sabores, inclusive o da reatividade.*
 
 #### Simple example of a "task list":
 ```sh
