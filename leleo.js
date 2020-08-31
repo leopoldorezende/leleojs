@@ -41,6 +41,7 @@ var data = applyProxy(data, function() {
                                 case 'style':
                                     Object.keys(old).forEach(function(key) {
                                         if(old[key] != current[key] && key != 'children') {
+                                            console.log(old[key]+ ' -> '+current[key])
                                             old[key] = current[key]
                                         }
                                     })
@@ -108,7 +109,7 @@ onChange = function(el) {
     const handler = {
         set(target, key, value) {
             if(key != 'tag' && key != '_element') {
-                el.fnSet(el.proxyParent, key, value)
+                el.fnSet(el.proxyParent, key, value, el.ref)
                 return Reflect.set(target, key, value)
             }
             else {
@@ -138,12 +139,13 @@ function render(container, comp, refParent, refChild) {
     
     // Função recursiva que renderiza a aplicação
     Object.keys(comp).forEach(function(child) {
-
         if(child != '_prop') {
             var ref = (refParent ? refParent+'/' : '')+(refChild ? refChild : child)
             var obj = comp[child]
             var prop = comp[child]._prop
             var className = ref.replace(/\//g, '__')
+            var reference = 'app'
+            ref.split('/').forEach(function(el) {reference += `["${el}"]`})
 
             if(prop._matrixClass) className = prop._matrixClass
 
@@ -191,7 +193,7 @@ function render(container, comp, refParent, refChild) {
                 prop._matrix = true
                 return render(parentAddress._prop._element, parentAddress, refParent, child)
             }
-        
+            
             // Mesclar objeto default para setar atributos ausentes
             prop = {...{
                 tag: 'div',
@@ -204,6 +206,10 @@ function render(container, comp, refParent, refChild) {
             // Guardando em _prop a referência do elemento no DOM
             prop._element = createElement(prop.tag)
 
+            // Aplicando conteúdo
+            if(prop._matrix) prop._element.innerHTML = '_matrix'
+            else if(prop.content) prop._element.innerHTML = prop.content
+            
             // Adicionando Proxy
             obj._prop = onChange({
                 proxyObject: prop,
@@ -227,10 +233,12 @@ function render(container, comp, refParent, refChild) {
                 }
             })
             obj._prop.style = onChange({
-                proxyObject: prop.style, 
-                proxyParent: prop, 
-                fnSet: (target, key, value) => {
-                    target._element.css({[key]: value})
+                proxyObject: obj._prop.style,
+                proxyParent: obj,
+                ref: reference,
+                fnSet: (target, key, value, ref) => {
+                    if(ref) target = eval(ref)
+                    target._prop._element.css({[key]: value})
                 },
                 fnDelete: (target, key) => {
                     target._element.css(target.style, true)
@@ -264,39 +272,33 @@ function render(container, comp, refParent, refChild) {
                 obj._prop.actions.bind(prop)()
             }
 
-            if(!prop._matrix) {
-                // Aplicando estilo
-                if(Object.keys(prop.style).length > 0) {
-                    var styleLessChildren = {...prop.style}
-                    if(prop.style.children) delete styleLessChildren.children
+            // Aplicando estilo
+            if(Object.keys(prop.style).length > 0) {
+                var styleLessChildren = {...prop.style}
+                if(prop.style.children) delete styleLessChildren.children
 
-                    styleSheet['.'+className] = styleLessChildren
+                styleSheet['.'+className] = styleLessChildren
 
-                    if(prop.style.children) {
-                        Object.keys(prop.style.children).forEach(function(attr) {
-                            styleSheet['.'+className+attr] = prop.style.children[attr]
-                        })
-                    }
+                if(prop.style.children) {
+                    Object.keys(prop.style.children).forEach(function(attr) {
+                        styleSheet['.'+className+attr] = prop.style.children[attr]
+                    })
                 }
-                
-                // Aplicando atributos e estilos
-                prop._element.attr(prop.attributes)
-                prop._element.attr({class: camelToKebab(className)})
-
-                // Escutando eventos
-                Object.keys(prop.events).forEach(function(type) {
-                    prop._element.addEventListener(type, function() {
-                        prop.events[type].apply(prop, [this, data])
-                    }, false)
-                })
-                    
-                // Inserindo elemento ao container
-                if(!prop._matrix) container.appendChild(prop._element)
             }
+            
+            // Aplicando atributos e estilos
+            prop._element.attr(prop.attributes)
+            prop._element.attr({class: camelToKebab(className)})
 
-            // Aplicando conteúdo
-            if(prop._matrix) prop._element.innerHTML = '_matrix'
-            else if(prop.content) prop._element.innerHTML = prop.content
+            // Escutando eventos
+            Object.keys(prop.events).forEach(function(type) {
+                prop._element.addEventListener(type, function() {
+                    prop.events[type].apply(prop, [this, data])
+                }, false)
+            })
+                
+            // Inserindo elemento ao container
+            if(!prop._matrix) container.appendChild(prop._element)
 
             // Chamado recursivamente
             if(Object.keys(obj).length > 1) {
