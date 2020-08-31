@@ -3,7 +3,7 @@ var data = {
     appTitle: 'Nova Tarefa',
     title: 'Nova Tarefa',
     titleColor: '#688',
-    list: ['Melancia', 'Abacaxi', 'Morango'],
+    list: ['Finalizar leleojs', 'Estudar mais', 'Ter Juízo'],
 }
 
 const components = {
@@ -44,7 +44,7 @@ const setApp = (data) => {
                             display: 'block',
                             marginTop: '20px',
                             textTransform: 'capitalize',
-                            content: '`Adicione uma tarefa`',
+                            content: '`Seja Criativo!`',
                         },
                     },
                 },
@@ -120,9 +120,7 @@ const setApp = (data) => {
                         disabled: true
                     },
                     events: {
-                        click: function(el) {
-                            this.style.background = 'red'
-                            
+                        click: function(el, data) {
                             data.list.push(data.title)
                             data.list = Array.from(data.list)
                             data.title = data.appTitle
@@ -219,7 +217,7 @@ const setApp = (data) => {
                                 }
                             },
                             events: {
-                                click: function(el) {
+                                click: function(el, data) {
                                     data.list.splice(el.getAttribute('data-index'), 1)
                                     data.list = Array.from(data.list)
                                 }
@@ -228,12 +226,37 @@ const setApp = (data) => {
                     },
                 },
             },
+            liNoItems: {
+                _prop: (() => {
+                    var visible
+                    if(data.list.length > 0) visible = 'none'
+                    else visible = 'block'
+                    
+                    return {
+                        tag: 'p',
+                        content: 'Não há itens cadastrados',
+                        style: {
+                            display: visible,
+                            width: '100%',
+                            padding: '8px 12px',
+                            borderBottom: '1px solid #444',
+                            background: '#2a2d31',
+                            color: '#888',
+                            listStyle: 'none',
+                            fontSize: '13px',
+                            transition: 'all .3s',
+                            boxSizing: 'border-box',
+                        },
+                    }
+                })(),
+            },
         },
         copyleft: {
             _prop: {
                 content: 'leleoJS - <i>Copyleft 2020</i>',
                 style: {
                     position: 'fixed',
+                    width: '100%',
                     bottom: '20px',
                     fontSize: '12px',
                     paddingTop: '20px',
