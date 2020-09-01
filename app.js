@@ -1,4 +1,4 @@
-
+// Global and reactive variables
 var data = {
     appTitle: 'Nova Tarefa',
     title: 'Nova Tarefa',
@@ -6,6 +6,7 @@ var data = {
     list: ['Finalizar leleojs', 'Estudar mais', 'Ter Juízo'],
 }
 
+// Reusable components
 const components = {
     title: (params) => {
         return {
@@ -23,6 +24,7 @@ const components = {
     },
 }
 
+// Building by objects
 const setApp = (data) => {
     return {
         title: {
@@ -32,7 +34,7 @@ const setApp = (data) => {
                 size: 2,
             })
         },
-        addtask: {
+        newtask: {
             _prop: {
                 tag: 'div',
                 style: {
@@ -84,8 +86,8 @@ const setApp = (data) => {
                                 data.title = el.value
                                 data.titleColor = '#fe8'
                             }
-                            app.addtask.buttonCreateTask._prop.actions()
-                            app.addtask.subTitle._prop.actions()
+                            app.newtask.buttonCreateTask._prop.actions()
+                            app.newtask.subTitle._prop.actions()
                         },
                     },
                 },
@@ -126,8 +128,8 @@ const setApp = (data) => {
                             data.title = data.appTitle
                             data.titleColor = '#688'
                             
-                            app.addtask.subTitle._prop.actions()
-                            app.addtask.buttonCreateTask._prop.actions()
+                            app.newtask.subTitle._prop.actions()
+                            app.newtask.buttonCreateTask._prop.actions()
                         },
                     },
                     actions: function () {
@@ -265,4 +267,9 @@ const setApp = (data) => {
             }
         },
     }
+}
+
+// Subsequent actions
+function complete() {
+    app.newtask.subTitle._prop.actions()
 }
