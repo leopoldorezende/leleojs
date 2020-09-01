@@ -41,7 +41,6 @@ var data = applyProxy(data, function() {
                                 case 'style':
                                     Object.keys(old).forEach(function(key) {
                                         if(old[key] != current[key] && key != 'children') {
-                                            console.log(old[key]+ ' -> '+current[key])
                                             old[key] = current[key]
                                         }
                                     })
