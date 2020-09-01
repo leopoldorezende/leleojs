@@ -1,4 +1,3 @@
-
 // leleo.js
 // Só na manha
 
@@ -307,7 +306,11 @@ function render(container, comp, refParent, refChild) {
     })
 }
 render($('#app'), app)
-                   
+   
+// Caso exista a função complete() executar suas instruções
+if(typeof complete !== 'undefined') {
+    complete()
+}
 
 // Aplicando CSS
 var css = camelToKebab(JSON.stringify(styleSheet))
