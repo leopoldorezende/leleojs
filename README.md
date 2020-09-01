@@ -11,6 +11,9 @@ var data = {
     title: 'New Task',
     titleColor: '#688',
     list: ['Finalizar leleojs', 'Estudar mais', 'Ter Juízo'],
+    complete: function() {
+        
+    }
 }
 
 // Reusable components
@@ -22,7 +25,6 @@ const components = {
             style: {
                 color: data.titleColor,
                 fontSize: params.size+'em',
-                marginBottom: '0px',
             },
             actions: function () {
                 this.content = params.prefix+params.text
@@ -36,12 +38,18 @@ const setApp = (data) => {
     return {
         title: {
             _prop: components.title({
-                text: data.title,
-                prefix: ': ', 
+                text: "My Tasks",
                 size: 2,
             }),
         },
-        container: {
+        subtitle: {
+            _prop: components.title({
+                text: data.title,
+                prefix: 'Add: ', 
+                size: 1,
+            }),
+        },
+        newtask: {
             _prop: {
                 tag: 'div',
                 style: {
@@ -59,13 +67,14 @@ const setApp = (data) => {
                     events: {
                         input: function(el, data) {
                             if(el.value == '') {
-                                data.title = data.appTitle
+                                data.title = 'New Task'
                                 data.titleColor = '#688' 
                             }
                             else { 
                                 data.title = el.value
-                                data.titleColor = '#fe8'
+                                data.titleColor = '#7e9'
                             }
+                            app.subtitle._prop.actions()
                         },
                     },
                 },
@@ -79,16 +88,18 @@ const setApp = (data) => {
                         color: '#555',
                         children: {
                             ':hover': {
-                                background: '#fe8',
+                                background: '#7e9',
                             },
                         },
                     },
                     events: {
-                        click: function() {
-                            data.list.push(data.title)
-                            data.list = Array.from(data.list)
-                            data.title = "New Task"
-                            data.titleColor = '#688'
+                        click: function(el, data) {
+                            if(app.newtask.inputTaskName._prop._element.value != '') {
+                                data.list.push(data.title)
+                                data.list = Array.from(data.list)
+                                data.title = "New Task"
+                                data.titleColor = '#688'
+                            }
                         },
                     },
                 },
@@ -119,7 +130,7 @@ const setApp = (data) => {
                             float: 'right',
                         },
                         events: {
-                            click: function(el) {
+                            click: function(el, data) {
                                 data.list.splice(el.getAttribute('data-index'), 1)
                                 data.list = Array.from(data.list)
                             },
@@ -129,5 +140,10 @@ const setApp = (data) => {
             },
         },
     }
+}
+
+// Subsequent actions
+function complete() {
+    app.subtitle._prop.actions()
 }
 ```
